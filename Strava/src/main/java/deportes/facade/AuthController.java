@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import deportes.dto.CredencialesDTO;
+import deportes.dto.TokenDTO;
 import deportes.dto.UsuarioDTO;
 import deportes.entity.Usuario;
 import deportes.service.AuthService;
@@ -27,7 +28,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestBody UsuarioDTO usuarioDTO){
+	public ResponseEntity<String> register(@RequestBody UsuarioDTO usuarioDTO) {
 		Usuario usuario = new Usuario(usuarioDTO);
 		Optional<Boolean> respuesta = authService.register(usuario);
 		
@@ -39,7 +40,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody CredencialesDTO credenciales){
+	public ResponseEntity<String> login(@RequestBody CredencialesDTO credenciales) {
 		Optional<String> token = authService.login(credenciales.getEmail(), credenciales.getContrasenya());
 		
 		if (token.isPresent()) {
@@ -49,4 +50,14 @@ public class AuthController {
 		}
 	}
 	
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(@RequestBody TokenDTO token) {
+		Optional<Boolean> respuesta = authService.logout(token.getToken());
+		
+		if (respuesta.isPresent() && respuesta.get()) {
+			return new ResponseEntity<>("Logout exitoso", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	}
 }
